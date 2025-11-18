@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Problem Metadata JSON Generator</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #34495e;
+            --success: #2ecc71;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        header {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: var(--secondary);
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-group input {
+            width: auto;
+            margin-right: 10px;
+        }
+
+        .btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+        }
+
+        .btn-danger {
+            background: var(--accent);
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-success {
+            background: var(--success);
+        }
+
+        .btn-success:hover {
+            background: #27ae60;
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        .problems-list {
+            margin-top: 20px;
+        }
+
+        .problem-item {
+            background: var(--light);
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--secondary);
+        }
+
+        .problem-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .problem-title {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .problem-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .problem-details {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .json-output {
+            background: #2c3e50;
+            color: #ecf0f1;
+            border-radius: 4px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--dark);
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 14px;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #7f8c8d;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #bdc3c7;
+        }
+
+        .required::after {
+            content: " *";
+            color: var(--accent);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Problem Metadata JSON Generator</h1>
+            <p class="subtitle">Create properly formatted JSON for your problem sets with ease</p>
+        </header>
+
+        <div class="card">
+            <h2>Problem Set Details</h2>
+            <div class="form-group">
+                <label for="owner" class="required">Owner</label>
+                <input type="text" id="owner" value="Turing STEM">
+            </div>
+
+            <div class="form-group">
+                <label for="name" class="required">Name</label>
+                <input type="text" id="name" value="TGA-comp_stem_qa_TUR/stem-scientific-code-v2">
+            </div>
+
+            <div class="form-group">
+                <label for="description" class="required">Description</label>
+                <textarea
+                    id="description">Advanced numerical computation problems involving differential equations, quantum mechanics, and physics simulations</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="version" class="required">Version</label>
+                <input type="text" id="version" value="1.0.0">
+            </div>
+
+            <div class="form-group">
+                <label for="category" class="required">Category</label>
+                <input type="text" id="category" value="numerical_computation">
+            </div>
+
+            <div class="form-group">
+                <label for="language" class="required">Language</label>
+                <input type="text" id="language" value="python">
+            </div>
+
+            <div class="form-group">
+                <label for="difficulty" class="required">Difficulty</label>
+                <select id="difficulty">
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard" selected>Hard</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Add New Problem</h2>
+            <div class="form-group">
+                <label for="image" class="required">Image</label>
+                <input type="text" id="image" value="us-east1-docker.pkg.dev/gcp-taiga/turing/stem-code:1.0.60">
+            </div>
+
+            <div class="form-group">
+                <label for="startup_command" class="required">Startup Command</label>
+                <input type="text" id="startup_command"
+                    value="uv --offline --directory /mcp_server run numerical_computation mcp">
+            </div>
+
+            <div class="form-group">
+                <label for="problem_id" class="required">Problem ID</label>
+                <input type="text" id="problem_id" value="191103">
+            </div>
+
+            <div class="form-group">
+                <label for="required_tools" class="required">Required Tools</label>
+                <input type="text" id="required_tools" value="bash, str_replace_editor">
+                <small>Separate multiple tools with commas</small>
+            </div>
+
+            <div class="form-group">
+                <label for="task_prompt" class="required">Task Prompt</label>
+                <textarea
+                    id="task_prompt">Model steady diffusion of a neutral solute through a heterogeneous polymer element with spatially varying diffusivity. The diffusivity D(x) = 1e-9 * (1 + 0.5*sin(2*pi*x/L)) m²/s, where L = 1 mm. The concentration at x=0 is 1 mol/m³ and at x=L is 0 mol/m³. Solve the steady-state diffusion equation to find the concentration profile and calculate the flux at x=0.</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="solution" class="required">Solution</label>
+                <input type="text" id="solution" value="0.141">
+            </div>
+
+            <div class="form-group">
+                <label for="batch">Batch</label>
+                <input type="text" id="batch">
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="scratchpad" checked>
+                <label for="scratchpad">Scratchpad Allowed</label>
+            </div>
+
+            <div class="checkbox-group">
+                <input type="checkbox" id="enable_api" checked>
+                <label for="enable_api">Enable Anthropic API</label>
+            </div>
+
+            <button id="add-problem" class="btn btn-full">Add Problem</button>
+        </div>
+
+        <div class="card">
+            <h2>Problems List</h2>
+            <div id="problems-container" class="problems-list">
+                <div class="empty-state">
+                    <i>📝</i>
+                    <p>No problems added yet. Add your first problem above.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="grid-column: 1 / -1;">
+            <h2>Generated JSON</h2>
+            <div class="json-output" id="json-output">
+                {/* JSON will be displayed here */}
+            </div>
+            <div class="actions">
+                <button id="copy-json" class="btn btn-success">
+                    Copy JSON to Clipboard
+                </button>
+                <button id="clear-all" class="btn btn-danger">
+                    Clear All Problems
+                </button>
+                <div class="tooltip">
+                    <button id="download-json" class="btn">
+                        Download JSON File
+                    </button>
+                    <span class="tooltiptext">Download as problems-metadata.json</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const problems = [];
+            let problemCounter = 0;
+
+            // DOM Elements
+            const problemsContainer = document.getElementById('problems-container');
+            const jsonOutput = document.getElementById('json-output');
+            const addProblemBtn = document.getElementById('add-problem');
+            const copyJsonBtn = document.getElementById('copy-json');
+            const clearAllBtn = document.getElementById('clear-all');
+            const downloadJsonBtn = document.getElementById('download-json');
+
+            // Initialize with example problem
+            addExampleProblem();
+
+            // Event Listeners
+            addProblemBtn.addEventListener('click', addProblemFromForm);
+            copyJsonBtn.addEventListener('click', copyJsonToClipboard);
+            clearAllBtn.addEventListener('click', clearAllProblems);
+            downloadJsonBtn.addEventListener('click', downloadJsonFile);
+
+            // Add example problem on load
+            function addExampleProblem() {
+                const problem = {
+                    image: "us-east1-docker.pkg.dev/gcp-taiga/turing/stem-code:1.0.60",
+                    startup_command: "uv --offline --directory /mcp_server run numerical_computation mcp",
+                    id: "191103",
+                    required_tools: ["bash", "str_replace_editor"],
+                    scratchpad: true,
+                    enable_anthropic_api: true,
+                    task_prompt: "Model steady diffusion of a neutral solute through a heterogeneous polymer element with spatially varying diffusivity. The diffusivity D(x) = 1e-9 * (1 + 0.5*sin(2*pi*x/L)) m²/s, where L = 1 mm. The concentration at x=0 is 1 mol/m³ and at x=L is 0 mol/m³. Solve the steady-state diffusion equation to find the concentration profile and calculate the flux at x=0.",
+                    solution: "0.141",
+                    batch: "",
+                    difficulty: "hard",
+                    task_type: "computation",
+                    description: "Model steady diffusion of a neutral solute through a heterogeneous polymer element with spatially varying diffusivity"
+                };
+
+                problems.push(problem);
+                problemCounter++;
+                updateProblemsList();
+                updateJsonOutput();
+            }
+
+            // Add problem from form inputs
+            function addProblemFromForm() {
+                const requiredTools = document.getElementById('required_tools').value
+                    .split(',')
+                    .map(tool => tool.trim())
+                    .filter(tool => tool !== '');
+
+                const problem = {
+                    image: document.getElementById('image').value,
+                    startup_command: document.getElementById('startup_command').value,
+                    id: document.getElementById('problem_id').value,
+                    required_tools: requiredTools,
+                    scratchpad: document.getElementById('scratchpad').checked,
+                    enable_anthropic_api: document.getElementById('enable_api').checked,
+                    task_prompt: document.getElementById('task_prompt').value,
+                    solution: document.getElementById('solution').value,
+                    batch: document.getElementById('batch').value,
+                    difficulty: document.getElementById('difficulty').value,
+                    task_type: "computation",
+                    description: document.getElementById('task_prompt').value.substring(0, 100) + '...'
+                };
+
+                problems.push(problem);
+                problemCounter++;
+                updateProblemsList();
+                updateJsonOutput();
+
+                // Reset form (except for image and startup_command which are likely to be the same)
+                document.getElementById('problem_id').value = '';
+                document.getElementById('required_tools').value = '';
+                document.getElementById('task_prompt').value = '';
+                document.getElementById('solution').value = '';
+                document.getElementById('batch').value = '';
+            }
+
+            // Update the problems list UI
+            function updateProblemsList() {
+                if (problems.length === 0) {
+                    problemsContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i>📝</i>
+                            <p>No problems added yet. Add your first problem above.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                problemsContainer.innerHTML = '';
+
+                problems.forEach((problem, index) => {
+                    const problemElement = document.createElement('div');
+                    problemElement.className = 'problem-item';
+                    problemElement.innerHTML = `
+                        <div class="problem-header">
+                            <div class="problem-title">Problem #${index + 1} (ID: ${problem.id})</div>
+                            <div class="problem-actions">
+                                <button class="btn btn-danger" onclick="removeProblem(${index})">Remove</button>
+                            </div>
+                        </div>
+                        <div class="problem-details">
+                            <div><strong>Description:</strong> ${problem.description}</div>
+                            <div><strong>Difficulty:</strong> ${problem.difficulty}</div>
+                            <div><strong>Tools:</strong> ${problem.required_tools.join(', ')}</div>
+                        </div>
+                    `;
+                    problemsContainer.appendChild(problemElement);
+                });
+            }
+
+            // Remove a problem
+            window.removeProblem = function (index) {
+                problems.splice(index, 1);
+                updateProblemsList();
+                updateJsonOutput();
+            };
+
+            // Update the JSON output
+            function updateJsonOutput() {
+                const problemSet = {
+                    problem_set: {
+                        owner: document.getElementById('owner').value,
+                        name: document.getElementById('name').value,
+                        description: document.getElementById('description').value,
+                        version: document.getElementById('version').value,
+                        created_at: new Date().toISOString(),
+                        metadata: {
+                            category: document.getElementById('category').value,
+                            language: document.getElementById('language').value,
+                            difficulty: document.getElementById('difficulty').value
+                        },
+                        problems: problems.map(problem => ({
+                            image: problem.image,
+                            startup_command: problem.startup_command,
+                            id: problem.id,
+                            required_tools: problem.required_tools,
+                            scratchpad: problem.scratchpad ? "allowed" : "not_allowed",
+                            enable_anthropic_api: problem.enable_anthropic_api,
+                            extra_fields: {
+                                task_prompt: problem.task_prompt,
+                                solution: problem.solution,
+                                enable_anthropic_api: problem.enable_anthropic_api
+                            },
+                            metadata: {
+                                difficulty: problem.difficulty,
+                                task_type: problem.task_type,
+                                description: problem.description,
+                                solution: problem.solution,
+                                batch: problem.batch
+                            }
+                        }))
+                    }
+                };
+
+                jsonOutput.textContent = JSON.stringify(problemSet, null, 2);
+            }
+
+            // Copy JSON to clipboard
+            function copyJsonToClipboard() {
+                const jsonText = jsonOutput.textContent;
+                navigator.clipboard.writeText(jsonText).then(() => {
+                    // Show success feedback
+                    const originalText = copyJsonBtn.textContent;
+                    copyJsonBtn.textContent = 'Copied!';
+                    copyJsonBtn.style.background = '#2ecc71';
+
+                    setTimeout(() => {
+                        copyJsonBtn.textContent = originalText;
+                        copyJsonBtn.style.background = '';
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                    alert('Failed to copy JSON to clipboard');
+                });
+            }
+
+            // Clear all problems
+            function clearAllProblems() {
+                if (confirm('Are you sure you want to clear all problems?')) {
+                    problems.length = 0;
+                    updateProblemsList();
+                    updateJsonOutput();
+                }
+            }
+
+            // Download JSON as file
+            function downloadJsonFile() {
+                const jsonText = jsonOutput.textContent;
+                const blob = new Blob([jsonText], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'problems-metadata.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+
+            // Initialize JSON output
+            updateJsonOutput();
+        });
+    </script>
+</body>
+
+</html>
