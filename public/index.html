@@ -271,7 +271,7 @@
             <h2>Problem Set Details</h2>
             <div class="form-group">
                 <label for="owner" class="required">Owner</label>
-                <input type="text" id="owner" value="Turing STEM">
+                <input disabled type="text" id="owner" value="Turing STEM">
             </div>
 
             <div class="form-group">
@@ -281,18 +281,18 @@
 
             <div class="form-group">
                 <label for="description" class="required">Description</label>
-                <textarea
+                <textarea disabled
                     id="description">Advanced numerical computation problems involving differential equations, quantum mechanics, and physics simulations</textarea>
             </div>
 
             <div class="form-group">
                 <label for="version" class="required">Version</label>
-                <input type="text" id="version" value="1.0.0">
+                <input disabled type="text" id="version" value="1.0.0">
             </div>
 
             <div class="form-group">
                 <label for="category" class="required">Category</label>
-                <input type="text" id="category" value="numerical_computation">
+                <input disabled type="text" id="category" value="numerical_computation">
             </div>
 
             <div class="form-group">
@@ -319,7 +319,7 @@
 
             <div class="form-group">
                 <label for="startup_command" class="required">Startup Command</label>
-                <input type="text" id="startup_command"
+                <input disabled type="text" id="startup_command"
                     value="uv --offline --directory /mcp_server run numerical_computation mcp">
             </div>
 
@@ -330,19 +330,19 @@
 
             <div class="form-group">
                 <label for="required_tools" class="required">Required Tools</label>
-                <input type="text" id="required_tools" value="bash, str_replace_editor">
+                <input disabled type="text" id="required_tools" value="bash, str_replace_editor">
                 <small>Separate multiple tools with commas</small>
             </div>
 
             <div class="form-group">
                 <label for="task_prompt" class="required">Task Prompt</label>
                 <textarea
-                    id="task_prompt">Model steady diffusion of a neutral solute through a heterogeneous polymer element with spatially varying diffusivity. The diffusivity D(x) = 1e-9 * (1 + 0.5*sin(2*pi*x/L)) m²/s, where L = 1 mm. The concentration at x=0 is 1 mol/m³ and at x=L is 0 mol/m³. Solve the steady-state diffusion equation to find the concentration profile and calculate the flux at x=0.</textarea>
+                    id="task_prompt">Write a python script to find the count of prime numbers between \(1\) and \(100\)</textarea>
             </div>
 
             <div class="form-group">
                 <label for="solution" class="required">Solution</label>
-                <input type="text" id="solution" value="0.141">
+                <input type="text" id="solution" value="25">
             </div>
 
             <div class="form-group">
@@ -351,12 +351,12 @@
             </div>
 
             <div class="checkbox-group">
-                <input type="checkbox" id="scratchpad" checked>
+                <input disabled type="checkbox" id="scratchpad" checked>
                 <label for="scratchpad">Scratchpad Allowed</label>
             </div>
 
             <div class="checkbox-group">
-                <input type="checkbox" id="enable_api" checked>
+                <input disabled type="checkbox" id="enable_api" checked>
                 <label for="enable_api">Enable Anthropic API</label>
             </div>
 
@@ -409,7 +409,7 @@
             const downloadJsonBtn = document.getElementById('download-json');
 
             // Initialize with example problem
-            addExampleProblem();
+            // addExampleProblem();
 
             // Event Listeners
             addProblemBtn.addEventListener('click', addProblemFromForm);
@@ -459,7 +459,7 @@
                     batch: document.getElementById('batch').value,
                     difficulty: document.getElementById('difficulty').value,
                     task_type: "computation",
-                    description: document.getElementById('task_prompt')
+                    description: document.getElementById('task_prompt').value
                 };
 
                 problems.push(problem);
