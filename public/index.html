@@ -288,7 +288,7 @@
 
             <div class="form-group">
                 <label for="name" class="required">Name</label>
-                <input type="text" id="name" value="TGA-comp_stem_qa_TUR/stem-scientific-code-v6">
+                <input disabled type="text" id="name" value="TGA-comp_stem_qa_TUR/stem-scientific-code-v6">
             </div>
 
             <div class="form-group">
@@ -326,7 +326,7 @@
             <h2>Add New Problem</h2>
             <div class="form-group">
                 <label for="image" class="required">Image</label>
-                <input type="text" id="image" value="us-east1-docker.pkg.dev/gcp-taiga/turing/stem-code:2.0.5">
+                <input disabled type="text" id="image" value="us-east1-docker.pkg.dev/gcp-taiga/turing/stem-code:2.0.5">
             </div>
 
             <div class="form-group">
@@ -338,20 +338,20 @@
             <div class="form-row">
                 <div class="form-group">
                     <label for="problem_id" class="required">Problem ID</label>
-                    <input type="text" id="problem_id" value="191103">
+                    <input type="text" id="problem_id" value="" placeholder = "conversation_id">
                     <small>Conversation ID</small>
                 </div>
                 <div class="form-group">
                     <label for="conversation_version_id" class="required">Conversation Version ID</label>
-                    <input type="text" id="conversation_version_id" value="1">
-                    <small>Version number for the conversation</small>
+                    <input type="text" id="conversation_version_id" value="" placeholder = "conversation_version_id">
+                    <small>version id of the conversation</small>
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="domain" class="required">Domain</label>
-                <input type="text" id="domain" value="mathematics">
-                <small>e.g., mathematics, physics, chemistry, biology</small>
+                <input type="text" id="domain" value="" placeholder = "Domain">
+                <small>e.g., Math, Physics, Chemistry, Biology</small>
             </div>
 
             <div class="form-group">
@@ -363,12 +363,13 @@
             <div class="form-group">
                 <label for="task_prompt" class="required">Task Prompt</label>
                 <textarea
-                    id="task_prompt">Write a python script to find the count of prime numbers between \(1\) and \(100\)</textarea>
+                    placeholder = "Enter prompt here"
+                    id="task_prompt"></textarea>
             </div>
 
             <div class="form-group">
                 <label for="solution" class="required">Solution</label>
-                <input type="text" id="solution" value="25">
+                <input type="text" id="solution" value="" placeholder = "ground truth">
             </div>
 
             <div class="form-group">
