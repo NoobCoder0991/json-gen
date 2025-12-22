@@ -257,6 +257,18 @@
             content: " *";
             color: var(--accent);
         }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 
@@ -276,7 +288,7 @@
 
             <div class="form-group">
                 <label for="name" class="required">Name</label>
-                <input type="text" id="name" value="TGA-comp_stem_qa_TUR/stem-scientific-code-v2">
+                <input type="text" id="name" value="TGA-comp_stem_qa_TUR/stem-scientific-code-v6">
             </div>
 
             <div class="form-group">
@@ -314,7 +326,7 @@
             <h2>Add New Problem</h2>
             <div class="form-group">
                 <label for="image" class="required">Image</label>
-                <input type="text" id="image" value="us-east1-docker.pkg.dev/gcp-taiga/turing/stem-code:1.0.60">
+                <input type="text" id="image" value="us-east1-docker.pkg.dev/gcp-taiga/turing/stem-code:2.0.5">
             </div>
 
             <div class="form-group">
@@ -323,9 +335,17 @@
                     value="uv --offline --directory /mcp_server run numerical_computation mcp">
             </div>
 
-            <div class="form-group">
-                <label for="problem_id" class="required">Problem ID</label>
-                <input type="text" id="problem_id" value="191103">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="problem_id" class="required">Problem ID</label>
+                    <input type="text" id="problem_id" value="191103">
+                    <small>Conversation ID</small>
+                </div>
+                <div class="form-group">
+                    <label for="conversation_version_id" class="required">Conversation Version ID</label>
+                    <input type="text" id="conversation_version_id" value="1">
+                    <small>Version number for the conversation</small>
+                </div>
             </div>
 
             <div class="form-group">
@@ -408,9 +428,6 @@
             const clearAllBtn = document.getElementById('clear-all');
             const downloadJsonBtn = document.getElementById('download-json');
 
-            // Initialize with example problem
-            // addExampleProblem();
-
             // Event Listeners
             addProblemBtn.addEventListener('click', addProblemFromForm);
             copyJsonBtn.addEventListener('click', copyJsonToClipboard);
@@ -422,7 +439,9 @@
                 const problem = {
                     image: "us-east1-docker.pkg.dev/gcp-taiga/turing/stem-code:1.0.60",
                     startup_command: "uv --offline --directory /mcp_server run numerical_computation mcp",
-                    id: "191103",
+                    problem_id: "191103",
+                    conversation_version_id: "1",
+                    combined_id: "191103-1",
                     required_tools: ["bash", "str_replace_editor"],
                     scratchpad: true,
                     enable_anthropic_api: true,
@@ -442,6 +461,14 @@
 
             // Add problem from form inputs
             function addProblemFromForm() {
+                const problemId = document.getElementById('problem_id').value.trim();
+                const conversationVersionId = document.getElementById('conversation_version_id').value.trim();
+                
+                if (!problemId || !conversationVersionId) {
+                    alert('Please fill in both Problem ID and Conversation Version ID');
+                    return;
+                }
+
                 const requiredTools = document.getElementById('required_tools').value
                     .split(',')
                     .map(tool => tool.trim())
@@ -450,7 +477,9 @@
                 const problem = {
                     image: document.getElementById('image').value,
                     startup_command: document.getElementById('startup_command').value,
-                    id: document.getElementById('problem_id').value,
+                    problem_id: problemId,
+                    conversation_version_id: conversationVersionId,
+                    combined_id: `${problemId}-${conversationVersionId}`,
                     required_tools: requiredTools,
                     scratchpad: document.getElementById('scratchpad').checked,
                     enable_anthropic_api: document.getElementById('enable_api').checked,
@@ -459,7 +488,7 @@
                     batch: document.getElementById('batch').value,
                     difficulty: document.getElementById('difficulty').value,
                     task_type: "computation",
-                    description: document.getElementById('task_prompt').value
+                    description: document.getElementById('task_prompt').value.substring(0, 100) + (document.getElementById('task_prompt').value.length > 100 ? '...' : '')
                 };
 
                 problems.push(problem);
@@ -467,8 +496,9 @@
                 updateProblemsList();
                 updateJsonOutput();
 
-                // Reset form (except for image and startup_command which are likely to be the same)
+                // Reset form (except for image, startup_command, and difficulty which are likely to be the same)
                 document.getElementById('problem_id').value = '';
+                document.getElementById('conversation_version_id').value = '1';
                 document.getElementById('task_prompt').value = '';
                 document.getElementById('solution').value = '';
                 document.getElementById('batch').value = '';
@@ -493,7 +523,7 @@
                     problemElement.className = 'problem-item';
                     problemElement.innerHTML = `
                         <div class="problem-header">
-                            <div class="problem-title">Problem #${index + 1} (ID: ${problem.id})</div>
+                            <div class="problem-title">Problem #${index + 1} (ID: ${problem.combined_id})</div>
                             <div class="problem-actions">
                                 <button class="btn btn-danger" onclick="removeProblem(${index})">Remove</button>
                             </div>
@@ -502,6 +532,7 @@
                             <div><strong>Description:</strong> ${problem.description}</div>
                             <div><strong>Difficulty:</strong> ${problem.difficulty}</div>
                             <div><strong>Tools:</strong> ${problem.required_tools.join(', ')}</div>
+                            <div><strong>Conversation ID:</strong> ${problem.problem_id} (v${problem.conversation_version_id})</div>
                         </div>
                     `;
                     problemsContainer.appendChild(problemElement);
@@ -532,7 +563,7 @@
                         problems: problems.map(problem => ({
                             image: problem.image,
                             startup_command: problem.startup_command,
-                            id: problem.id,
+                            id: problem.combined_id, // Using combined ID format: problem_id-conversation_version_id
                             required_tools: problem.required_tools,
                             scratchpad: problem.scratchpad ? "allowed" : "not_allowed",
                             enable_anthropic_api: problem.enable_anthropic_api,
@@ -547,7 +578,9 @@
                                 task_type: problem.task_type,
                                 description: problem.description,
                                 solution: problem.solution,
-                                batch: problem.batch
+                                batch: problem.batch,
+                                conversation_id: problem.problem_id,
+                                conversation_version_id: problem.conversation_version_id
                             }
                         }))
                     }
@@ -604,5 +637,4 @@
         });
     </script>
 </body>
-
 </html>
