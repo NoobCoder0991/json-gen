@@ -1,657 +1,3 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Problem Metadata JSON Generator</title>
-    <style>
-        :root {
-            --primary: #2c3e50;
-            --secondary: #3498db;
-            --accent: #e74c3c;
-            --light: #ecf0f1;
-            --dark: #34495e;
-            --success: #2ecc71;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: #f5f7fa;
-            color: var(--dark);
-            line-height: 1.6;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        header {
-            grid-column: 1 / -1;
-            text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        h1 {
-            color: var(--primary);
-            margin-bottom: 10px;
-        }
-
-        .subtitle {
-            color: var(--secondary);
-            font-size: 1.1rem;
-        }
-
-        .card {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 25px;
-            margin-bottom: 20px;
-        }
-
-        h2 {
-            color: var(--primary);
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--dark);
-        }
-
-        input,
-        textarea,
-        select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-            transition: border 0.3s;
-        }
-
-        input:focus,
-        textarea:focus,
-        select:focus {
-            outline: none;
-            border-color: var(--secondary);
-            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
-        }
-
-        textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .checkbox-group input {
-            width: auto;
-            margin-right: 10px;
-        }
-
-        .btn {
-            background: var(--secondary);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            transition: background 0.3s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .btn:hover {
-            background: #2980b9;
-        }
-
-        .btn-danger {
-            background: var(--accent);
-        }
-
-        .btn-danger:hover {
-            background: #c0392b;
-        }
-
-        .btn-success {
-            background: var(--success);
-        }
-
-        .btn-success:hover {
-            background: #27ae60;
-        }
-
-        .btn-full {
-            width: 100%;
-        }
-
-        .problems-list {
-            margin-top: 20px;
-        }
-
-        .problem-item {
-            background: var(--light);
-            border-radius: 4px;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-left: 4px solid var(--secondary);
-        }
-
-        .problem-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .problem-title {
-            font-weight: 600;
-            color: var(--primary);
-        }
-
-        .problem-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .problem-details {
-            font-size: 14px;
-            color: #666;
-        }
-
-        .json-output {
-            background: #2c3e50;
-            color: #ecf0f1;
-            border-radius: 4px;
-            padding: 20px;
-            font-family: 'Courier New', monospace;
-            white-space: pre-wrap;
-            overflow-x: auto;
-            max-height: 600px;
-            overflow-y: auto;
-        }
-
-        .actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .tooltip {
-            position: relative;
-            display: inline-block;
-        }
-
-        .tooltip .tooltiptext {
-            visibility: hidden;
-            width: 200px;
-            background-color: var(--dark);
-            color: white;
-            text-align: center;
-            border-radius: 6px;
-            padding: 8px;
-            position: absolute;
-            z-index: 1;
-            bottom: 125%;
-            left: 50%;
-            margin-left: -100px;
-            opacity: 0;
-            transition: opacity 0.3s;
-            font-size: 14px;
-        }
-
-        .tooltip:hover .tooltiptext {
-            visibility: visible;
-            opacity: 1;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 30px;
-            color: #7f8c8d;
-        }
-
-        .empty-state i {
-            font-size: 48px;
-            margin-bottom: 15px;
-            color: #bdc3c7;
-        }
-
-        .required::after {
-            content: " *";
-            color: var(--accent);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        @media (max-width: 768px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
-</head>
-
-<body>
-    <div class="container">
-        <header>
-            <h1>Problem Metadata JSON Generator</h1>
-            <p class="subtitle">Create properly formatted JSON for your problem sets with ease</p>
-        </header>
-
-        <div class="card">
-            <h2>Problem Set Details</h2>
-            <div class="form-group">
-                <label for="owner" class="required">Owner</label>
-                <input disabled type="text" id="owner" value="Turing STEM">
-            </div>
-
-            <div class="form-group">
-                <label for="name" class="required">Name</label>
-                <input disabled type="text" id="name" value="TGA-comp_stem_qa_TUR/stem-scientific-code-v6">
-            </div>
-
-            <div class="form-group">
-                <label for="description" class="required">Description</label>
-                <textarea disabled
-                    id="description">Advanced numerical computation problems involving differential equations, quantum mechanics, and physics simulations</textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="version" class="required">Version</label>
-                <input disabled type="text" id="version" value="1.0.0">
-            </div>
-
-            <div class="form-group">
-                <label for="category" class="required">Category</label>
-                <input disabled type="text" id="category" value="numerical_computation">
-            </div>
-
-            <div class="form-group">
-                <label for="language" class="required">Language</label>
-                <input type="text" id="language" value="python">
-            </div>
-
-            <div class="form-group">
-                <label for="difficulty" class="required">Difficulty</label>
-                <select id="difficulty">
-                    <option value="easy">Easy</option>
-                    <option value="medium">Medium</option>
-                    <option value="hard" selected>Hard</option>
-                </select>
-            </div>
-        </div>
-
-        <div class="card">
-            <h2>Add New Problem</h2>
-            <div class="form-group">
-                <label for="image" class="required">Image</label>
-                <input disabled type="text" id="image" value="us-east1-docker.pkg.dev/gcp-taiga/turing/stem-code:2.0.5">
-            </div>
-
-            <div class="form-group">
-                <label for="startup_command" class="required">Startup Command</label>
-                <input disabled type="text" id="startup_command"
-                    value="uv --offline --directory /mcp_server run numerical_computation mcp">
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="problem_id" class="required">Problem ID</label>
-                    <input type="text" id="problem_id" value="" placeholder = "conversation_id">
-                    <small>Conversation ID</small>
-                </div>
-                <div class="form-group">
-                    <label for="conversation_version_id" class="required">Conversation Version ID</label>
-                    <input type="text" id="conversation_version_id" value="" placeholder = "conversation_version_id">
-                    <small>version id of the conversation</small>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="domain" class="required">Domain</label>
-                <input type="text" id="domain" value="" placeholder = "Domain">
-                <small>e.g., Math, Physics, Chemistry, Biology</small>
-            </div>
-
-            <div class="form-group">
-                <label for="required_tools" class="required">Required Tools</label>
-                <input disabled type="text" id="required_tools" value="bash, str_replace_editor">
-                <small>Separate multiple tools with commas</small>
-            </div>
-
-            <div class="form-group">
-                <label for="task_prompt" class="required">Task Prompt</label>
-                <textarea
-                    placeholder = "Enter prompt here"
-                    id="task_prompt"></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="solution" class="required">Solution</label>
-                <input type="text" id="solution" value="" placeholder = "ground truth">
-            </div>
-
-            <div class="form-group">
-                <label for="batch">Batch</label>
-                <input type="text" id="batch">
-            </div>
-
-            <div class="checkbox-group">
-                <input disabled type="checkbox" id="scratchpad" checked>
-                <label for="scratchpad">Scratchpad Allowed</label>
-            </div>
-
-            <div class="checkbox-group">
-                <input disabled type="checkbox" id="enable_api" checked>
-                <label for="enable_api">Enable Anthropic API</label>
-            </div>
-
-            <button id="add-problem" class="btn btn-full">Add Problem</button>
-        </div>
-
-        <div class="card">
-            <h2>Problems List</h2>
-            <div id="problems-container" class="problems-list">
-                <div class="empty-state">
-                    <i>📝</i>
-                    <p>No problems added yet. Add your first problem above.</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="card" style="grid-column: 1 / -1;">
-            <h2>Generated JSON</h2>
-            <div class="json-output" id="json-output">
-                {/* JSON will be displayed here */}
-            </div>
-            <div class="actions">
-                <button id="copy-json" class="btn btn-success">
-                    Copy JSON to Clipboard
-                </button>
-                <button id="clear-all" class="btn btn-danger">
-                    Clear All Problems
-                </button>
-                <div class="tooltip">
-                    <button id="download-json" class="btn">
-                        Download JSON File
-                    </button>
-                    <span class="tooltiptext">Download as problems-metadata.json</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const problems = [];
-            let problemCounter = 0;
-
-            // DOM Elements
-            const problemsContainer = document.getElementById('problems-container');
-            const jsonOutput = document.getElementById('json-output');
-            const addProblemBtn = document.getElementById('add-problem');
-            const copyJsonBtn = document.getElementById('copy-json');
-            const clearAllBtn = document.getElementById('clear-all');
-            const downloadJsonBtn = document.getElementById('download-json');
-
-            // Event Listeners
-            addProblemBtn.addEventListener('click', addProblemFromForm);
-            copyJsonBtn.addEventListener('click', copyJsonToClipboard);
-            clearAllBtn.addEventListener('click', clearAllProblems);
-            downloadJsonBtn.addEventListener('click', downloadJsonFile);
-
-            // Add example problem on load
-            function addExampleProblem() {
-                const problem = {
-                    image: "us-east1-docker.pkg.dev/gcp-taiga/turing/stem-code:2.0.5",
-                    startup_command: "uv --offline --directory /mcp_server run numerical_computation mcp",
-                    problem_id: "191103",
-                    conversation_version_id: "1",
-                    combined_id: "191103-1",
-                    domain: "mathematics",
-                    required_tools: ["bash", "str_replace_editor"],
-                    scratchpad: true,
-                    enable_anthropic_api: true,
-                    task_prompt: "Model steady diffusion of a neutral solute through a heterogeneous polymer element with spatially varying diffusivity. The diffusivity D(x) = 1e-9 * (1 + 0.5*sin(2*pi*x/L)) m²/s, where L = 1 mm. The concentration at x=0 is 1 mol/m³ and at x=L is 0 mol/m³. Solve the steady-state diffusion equation to find the concentration profile and calculate the flux at x=0.",
-                    solution: "0.141",
-                    batch: "",
-                    difficulty: "hard",
-                    task_type: "computation",
-                    description: "Model steady diffusion of a neutral solute through a heterogeneous polymer element with spatially varying diffusivity"
-                };
-
-                problems.push(problem);
-                problemCounter++;
-                updateProblemsList();
-                updateJsonOutput();
-            }
-
-            // Add problem from form inputs
-            function addProblemFromForm() {
-                const problemId = document.getElementById('problem_id').value.trim();
-                const conversationVersionId = document.getElementById('conversation_version_id').value.trim();
-                const domain = document.getElementById('domain').value.trim();
-                
-                if (!problemId || !conversationVersionId || !domain) {
-                    alert('Please fill in Problem ID, Conversation Version ID, and Domain');
-                    return;
-                }
-
-                const requiredTools = document.getElementById('required_tools').value
-                    .split(',')
-                    .map(tool => tool.trim())
-                    .filter(tool => tool !== '');
-
-                const problem = {
-                    image: document.getElementById('image').value,
-                    startup_command: document.getElementById('startup_command').value,
-                    problem_id: problemId,
-                    conversation_version_id: conversationVersionId,
-                    combined_id: `${problemId}-${conversationVersionId}`,
-                    domain: domain,
-                    required_tools: requiredTools,
-                    scratchpad: document.getElementById('scratchpad').checked,
-                    enable_anthropic_api: document.getElementById('enable_api').checked,
-                    task_prompt: document.getElementById('task_prompt').value,
-                    solution: document.getElementById('solution').value,
-                    batch: document.getElementById('batch').value,
-                    difficulty: document.getElementById('difficulty').value,
-                    task_type: "computation",
-                    description: document.getElementById('task_prompt').value.substring(0, 100) + (document.getElementById('task_prompt').value.length > 100 ? '...' : '')
-                };
-
-                problems.push(problem);
-                problemCounter++;
-                updateProblemsList();
-                updateJsonOutput();
-
-                // Reset form (except for image, startup_command, and difficulty which are likely to be the same)
-                document.getElementById('problem_id').value = '';
-                document.getElementById('conversation_version_id').value = '1';
-                document.getElementById('task_prompt').value = '';
-                document.getElementById('solution').value = '';
-                document.getElementById('batch').value = '';
-            }
-
-            // Update the problems list UI
-            function updateProblemsList() {
-                if (problems.length === 0) {
-                    problemsContainer.innerHTML = `
-                        <div class="empty-state">
-                            <i>📝</i>
-                            <p>No problems added yet. Add your first problem above.</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                problemsContainer.innerHTML = '';
-
-                problems.forEach((problem, index) => {
-                    const problemElement = document.createElement('div');
-                    problemElement.className = 'problem-item';
-                    problemElement.innerHTML = `
-                        <div class="problem-header">
-                            <div class="problem-title">Problem #${index + 1} (ID: ${problem.combined_id})</div>
-                            <div class="problem-actions">
-                                <button class="btn btn-danger" onclick="removeProblem(${index})">Remove</button>
-                            </div>
-                        </div>
-                        <div class="problem-details">
-                            <div><strong>Description:</strong> ${problem.description}</div>
-                            <div><strong>Difficulty:</strong> ${problem.difficulty}</div>
-                            <div><strong>Domain:</strong> ${problem.domain}</div>
-                            <div><strong>Tools:</strong> ${problem.required_tools.join(', ')}</div>
-                            <div><strong>Conversation ID:</strong> ${problem.problem_id} (v${problem.conversation_version_id})</div>
-                        </div>
-                    `;
-                    problemsContainer.appendChild(problemElement);
-                });
-            }
-
-            // Remove a problem
-            window.removeProblem = function (index) {
-                problems.splice(index, 1);
-                updateProblemsList();
-                updateJsonOutput();
-            };
-
-            // Update the JSON output
-            function updateJsonOutput() {
-                const problemSet = {
-                    problem_set: {
-                        owner: document.getElementById('owner').value,
-                        name: document.getElementById('name').value,
-                        description: document.getElementById('description').value,
-                        version: document.getElementById('version').value,
-                        created_at: new Date().toISOString(),
-                        metadata: {
-                            category: document.getElementById('category').value,
-                            language: document.getElementById('language').value,
-                            difficulty: document.getElementById('difficulty').value
-                        },
-                        problems: problems.map(problem => ({
-                            image: problem.image,
-                            startup_command: problem.startup_command,
-                            id: problem.combined_id, // Using combined ID format: problem_id-conversation_version_id
-                            required_tools: problem.required_tools,
-                            scratchpad: problem.scratchpad ? "allowed" : "not_allowed",
-                            enable_anthropic_api: problem.enable_anthropic_api,
-                            task_prompt: problem.task_prompt,
-                            extra_fields: {
-                                task_prompt: problem.task_prompt,
-                                solution: problem.solution,
-                                enable_anthropic_api: problem.enable_anthropic_api
-                            },
-                            metadata: {
-                                difficulty: problem.difficulty,
-                                task_type: problem.task_type,
-                                description: problem.description,
-                                solution: problem.solution,
-                                batch: problem.batch,
-                                domain: problem.domain
-                            }
-                        }))
-                    }
-                };
-
-                jsonOutput.textContent = JSON.stringify(problemSet, null, 2);
-            }
-
-            // Copy JSON to clipboard
-            function copyJsonToClipboard() {
-                const jsonText = jsonOutput.textContent;
-                navigator.clipboard.writeText(jsonText).then(() => {
-                    // Show success feedback
-                    const originalText = copyJsonBtn.textContent;
-                    copyJsonBtn.textContent = 'Copied!';
-                    copyJsonBtn.style.background = '#2ecc71';
-
-                    setTimeout(() => {
-                        copyJsonBtn.textContent = originalText;
-                        copyJsonBtn.style.background = '';
-                    }, 2000);
-                }).catch(err => {
-                    console.error('Failed to copy: ', err);
-                    alert('Failed to copy JSON to clipboard');
-                });
-            }
-
-            // Clear all problems
-            function clearAllProblems() {
-                if (confirm('Are you sure you want to clear all problems?')) {
-                    problems.length = 0;
-                    updateProblemsList();
-                    updateJsonOutput();
-                }
-            }
-
-            // Download JSON as file
-            function downloadJsonFile() {
-                const jsonText = jsonOutput.textContent;
-                const blob = new Blob([jsonText], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'problems-metadata.json';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            }
-
-            // Initialize JSON output
-            updateJsonOutput();
-        });
-    </script>
-</body>
-</html> -->
-
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -659,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Problem Metadata JSON Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #2c3e50;
@@ -667,6 +16,7 @@
             --light: #ecf0f1;
             --dark: #34495e;
             --success: #2ecc71;
+            --warning: #f39c12;
         }
 
         * {
@@ -681,6 +31,7 @@
             color: var(--dark);
             line-height: 1.6;
             padding: 20px;
+            min-height: 100vh;
         }
 
         .container {
@@ -694,6 +45,7 @@
         @media (max-width: 768px) {
             .container {
                 grid-template-columns: 1fr;
+                gap: 20px;
             }
         }
 
@@ -702,32 +54,56 @@
             text-align: center;
             margin-bottom: 30px;
             padding-bottom: 20px;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 2px solid var(--secondary);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            border-radius: 10px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
         h1 {
-            color: var(--primary);
+            color: white;
             margin-bottom: 10px;
+            font-size: 2.2rem;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
         }
 
         .subtitle {
-            color: var(--secondary);
+            color: rgba(255, 255, 255, 0.9);
             font-size: 1.1rem;
+            font-weight: 300;
         }
 
         .card {
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
             padding: 25px;
             margin-bottom: 20px;
+            border: 1px solid #e1e8ed;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
         }
 
         h2 {
             color: var(--primary);
             margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
+            border-bottom: 2px solid var(--light);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h2:before {
+            content: "▸";
+            color: var(--secondary);
+            font-size: 1.2em;
         }
 
         .form-group {
@@ -739,17 +115,19 @@
             margin-bottom: 8px;
             font-weight: 600;
             color: var(--dark);
+            font-size: 0.95rem;
         }
 
         input,
         textarea,
         select {
             width: 100%;
-            padding: 12px;
+            padding: 12px 15px;
             border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-            transition: border 0.3s;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: all 0.3s;
+            background: white;
         }
 
         input:focus,
@@ -757,42 +135,66 @@
         select:focus {
             outline: none;
             border-color: var(--secondary);
-            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
         }
 
         textarea {
             min-height: 120px;
             resize: vertical;
+            line-height: 1.5;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
         }
 
         .checkbox-group {
             display: flex;
             align-items: center;
             margin-bottom: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            transition: background 0.3s;
+        }
+
+        .checkbox-group:hover {
+            background: #e9ecef;
         }
 
         .checkbox-group input {
             width: auto;
             margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        .checkbox-group label {
+            margin-bottom: 0;
+            font-weight: 500;
         }
 
         .btn {
             background: var(--secondary);
             color: white;
             border: none;
-            padding: 12px 20px;
-            border-radius: 4px;
+            padding: 12px 24px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
-            transition: background 0.3s;
+            transition: all 0.3s;
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            gap: 8px;
         }
 
         .btn:hover {
             background: #2980b9;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:active {
+            transform: translateY(0);
         }
 
         .btn-danger {
@@ -811,32 +213,80 @@
             background: #27ae60;
         }
 
+        .btn-warning {
+            background: var(--warning);
+        }
+
+        .btn-warning:hover {
+            background: #e67e22;
+        }
+
         .btn-full {
             width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            margin-top: 10px;
         }
 
         .problems-list {
             margin-top: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .problems-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .problems-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .problems-list::-webkit-scrollbar-thumb {
+            background: var(--secondary);
+            border-radius: 3px;
         }
 
         .problem-item {
-            background: var(--light);
-            border-radius: 4px;
-            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
             margin-bottom: 15px;
-            border-left: 4px solid var(--secondary);
+            border-left: 5px solid var(--secondary);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+            border: 1px solid #e9ecef;
+        }
+
+        .problem-item:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transform: translateX(2px);
         }
 
         .problem-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .problem-title {
-            font-weight: 600;
+            font-weight: 700;
             color: var(--primary);
+            font-size: 1.1rem;
+        }
+
+        .problem-id {
+            font-family: monospace;
+            background: var(--light);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: var(--dark);
         }
 
         .problem-actions {
@@ -846,25 +296,66 @@
 
         .problem-details {
             font-size: 14px;
-            color: #666;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .problem-details div {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: baseline;
+        }
+
+        .problem-details strong {
+            color: var(--dark);
+            min-width: 100px;
+            margin-right: 10px;
         }
 
         .json-output {
-            background: #2c3e50;
-            color: #ecf0f1;
-            border-radius: 4px;
-            padding: 20px;
-            font-family: 'Courier New', monospace;
+            background: #1a202c;
+            color: #e2e8f0;
+            border-radius: 8px;
+            padding: 25px;
+            font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
             white-space: pre-wrap;
             overflow-x: auto;
             max-height: 600px;
             overflow-y: auto;
+            font-size: 13px;
+            line-height: 1.5;
+            border: 1px solid #2d3748;
+        }
+
+        .json-output::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .json-output::-webkit-scrollbar-track {
+            background: #2d3748;
+            border-radius: 4px;
+        }
+
+        .json-output::-webkit-scrollbar-thumb {
+            background: #4a5568;
+            border-radius: 4px;
+        }
+
+        .json-output::-webkit-scrollbar-thumb:hover {
+            background: #718096;
         }
 
         .actions {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .actions .btn {
+            flex: 1;
+            min-width: 150px;
         }
 
         .tooltip {
@@ -879,15 +370,28 @@
             color: white;
             text-align: center;
             border-radius: 6px;
-            padding: 8px;
+            padding: 10px;
             position: absolute;
             z-index: 1;
             bottom: 125%;
             left: 50%;
-            margin-left: -100px;
+            transform: translateX(-50%);
             opacity: 0;
             transition: opacity 0.3s;
-            font-size: 14px;
+            font-size: 13px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            font-weight: normal;
+        }
+
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--dark) transparent transparent transparent;
         }
 
         .tooltip:hover .tooltiptext {
@@ -897,14 +401,20 @@
 
         .empty-state {
             text-align: center;
-            padding: 30px;
+            padding: 40px 20px;
             color: #7f8c8d;
         }
 
         .empty-state i {
-            font-size: 48px;
-            margin-bottom: 15px;
+            font-size: 64px;
+            margin-bottom: 20px;
             color: #bdc3c7;
+            opacity: 0.5;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+            color: #95a5a6;
         }
 
         .required::after {
@@ -922,24 +432,43 @@
             .form-row {
                 grid-template-columns: 1fr;
             }
+
+            .actions .btn {
+                min-width: 100%;
+            }
         }
 
         .file-upload {
             border: 2px dashed #ddd;
-            border-radius: 4px;
-            padding: 20px;
+            border-radius: 8px;
+            padding: 30px 20px;
             text-align: center;
             cursor: pointer;
-            transition: border-color 0.3s;
-            margin-bottom: 15px;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+            background: #f8f9fa;
         }
 
         .file-upload:hover {
             border-color: var(--secondary);
+            background: #edf2f7;
+        }
+
+        .file-upload.dragover {
+            border-color: var(--secondary);
+            background: #e3f2fd;
+            transform: scale(1.01);
         }
 
         .file-upload input {
             display: none;
+        }
+
+        .file-upload-icon {
+            font-size: 48px;
+            color: var(--secondary);
+            margin-bottom: 15px;
+            opacity: 0.7;
         }
 
         .file-list {
@@ -949,47 +478,142 @@
         .file-item {
             background: #f8f9fa;
             border: 1px solid #e9ecef;
-            border-radius: 4px;
-            padding: 10px;
-            margin-bottom: 8px;
+            border-radius: 6px;
+            padding: 12px 15px;
+            margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: all 0.3s;
+        }
+
+        .file-item:hover {
+            background: #e9ecef;
+            border-color: #dee2e6;
         }
 
         .file-item-name {
-            font-family: monospace;
+            font-family: 'Courier New', monospace;
             font-size: 14px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
             max-width: 70%;
+            color: var(--dark);
+            font-weight: 500;
         }
 
         .file-item-size {
             font-size: 12px;
             color: #6c757d;
             margin-left: 10px;
+            font-weight: normal;
         }
 
         .file-item-remove {
             background: var(--accent);
             color: white;
             border: none;
-            border-radius: 3px;
-            padding: 4px 8px;
+            border-radius: 4px;
+            padding: 5px 10px;
             font-size: 12px;
             cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
         }
 
         .file-item-remove:hover {
             background: #c0392b;
+            transform: scale(1.05);
         }
 
         .files-section {
-            margin-top: 20px;
+            margin-top: 25px;
             padding-top: 20px;
-            border-top: 1px solid #eee;
+            border-top: 2px solid #eee;
+        }
+
+        .files-section h3 {
+            margin-bottom: 15px;
+            color: var(--primary);
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .files-section h3:before {
+            content: "📎";
+            font-size: 1.2em;
+        }
+
+        .small-text {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 5px;
+            line-height: 1.4;
+        }
+
+        .version-selector {
+            position: relative;
+        }
+
+        .version-badge {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--secondary);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .version-badge.v6 {
+            background: #3498db;
+        }
+
+        .version-badge.v7 {
+            background: #9b59b6;
+        }
+
+        select.version-select {
+            padding-right: 70px;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: calc(100% - 15px) center;
+            background-size: 12px;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--light);
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: var(--dark);
+            border: 1px solid #ddd;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            color: var(--primary);
+            background: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
         }
     </style>
 </head>
@@ -1008,9 +632,15 @@
                 <input disabled type="text" id="owner" value="Turing STEM">
             </div>
 
-            <div class="form-group">
+            <div class="form-group version-selector">
                 <label for="name" class="required">Name</label>
-                <input disabled type="text" id="name" value="TGA-comp_stem_qa_TUR/stem-scientific-code-v6">
+                <select id="name" class="version-select">
+                    <option value="TGA-comp_stem_qa_TUR/stem-scientific-code-v6" selected>v6 -
+                        TGA-comp_stem_qa_TUR/stem-scientific-code-v6</option>
+                    <option value="TGA-comp_stem_qa_TUR/stem-scientific-code-v7">v7 -
+                        TGA-comp_stem_qa_TUR/stem-scientific-code-v7</option>
+                </select>
+                <div id="version-badge" class="version-badge v6">v6</div>
             </div>
 
             <div class="form-group">
@@ -1029,18 +659,19 @@
                 <input disabled type="text" id="category" value="numerical_computation">
             </div>
 
-            <div class="form-group">
-                <label for="language" class="required">Language</label>
-                <input type="text" id="language" value="python">
-            </div>
-
-            <div class="form-group">
-                <label for="difficulty" class="required">Difficulty</label>
-                <select id="difficulty">
-                    <option value="easy">Easy</option>
-                    <option value="medium">Medium</option>
-                    <option value="hard" selected>Hard</option>
-                </select>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="language" class="required">Language</label>
+                    <input type="text" id="language" value="python">
+                </div>
+                <div class="form-group">
+                    <label for="difficulty" class="required">Difficulty</label>
+                    <select id="difficulty">
+                        <option value="easy">Easy</option>
+                        <option value="medium">Medium</option>
+                        <option value="hard" selected>Hard</option>
+                    </select>
+                </div>
             </div>
         </div>
 
@@ -1059,7 +690,8 @@
 
             <div class="form-group">
                 <label for="system_prompt" class="required">System Prompt</label>
-                <textarea disabled id="system_prompt">You will be given a problem statement. Your task is to write a Python script that solves the problem.
+                <textarea disabled
+                    id="system_prompt">You will be given a problem statement. Your task is to write a Python script that solves the problem.
 
 You must apply a **two-pass "Think Again" strategy** before producing the final output.
 
@@ -1108,51 +740,53 @@ Your final output after applying the two-pass "think again" process must always 
                 <div class="form-group">
                     <label for="problem_id" class="required">Problem ID</label>
                     <input type="text" id="problem_id" value="" placeholder="conversation_id">
-                    <small>Conversation ID</small>
+                    <small class="small-text">Conversation ID</small>
                 </div>
                 <div class="form-group">
                     <label for="conversation_version_id" class="required">Conversation Version ID</label>
                     <input type="text" id="conversation_version_id" value="" placeholder="conversation_version_id">
-                    <small>version id of the conversation</small>
+                    <small class="small-text">Version ID of the conversation</small>
                 </div>
             </div>
 
             <div class="form-group">
                 <label for="domain" class="required">Domain</label>
                 <input type="text" id="domain" value="" placeholder="Domain">
-                <small>e.g., Math, Physics, Chemistry, Biology</small>
+                <small class="small-text">e.g., Math, Physics, Chemistry, Biology</small>
             </div>
 
             <div class="form-group">
                 <label for="required_tools" class="required">Required Tools</label>
                 <input disabled type="text" id="required_tools" value="bash, str_replace_editor">
-                <small>Separate multiple tools with commas</small>
+                <small class="small-text">Separate multiple tools with commas</small>
             </div>
 
             <div class="form-group">
                 <label for="task_prompt" class="required">Task Prompt</label>
-                <textarea placeholder="Enter prompt here" id="task_prompt"></textarea>
+                <textarea placeholder="Enter the task prompt here..." id="task_prompt"></textarea>
             </div>
 
             <div class="form-group">
                 <label for="solution" class="required">Solution</label>
-                <input type="text" id="solution" value="" placeholder="ground truth">
+                <input type="text" id="solution" value="" placeholder="Ground truth answer">
             </div>
 
             <div class="form-group">
                 <label for="batch">Batch</label>
-                <input type="text" id="batch">
+                <input type="text" id="batch" placeholder="Batch">
             </div>
 
             <div class="files-section">
                 <h3>Attach Files to Problem</h3>
                 <div class="file-upload" id="file-upload-area">
-                    <div style="font-size: 48px; color: #6c757d; margin-bottom: 10px;">📎</div>
-                    <p>Click to upload files or drag and drop</p>
-                    <p style="font-size: 12px; color: #6c757d; margin-top: 5px;">Text files only (txt, json, csv, etc.)</p>
-                    <input type="file" id="file-input" multiple>
+                    <div class="file-upload-icon">📎</div>
+                    <p><strong>Click to upload files</strong> or drag and drop</p>
+                    <p class="small-text">Text files only (txt, json, csv, py, js, html, css, md, etc.)</p>
+                    <p class="small-text">Maximum file size: 10MB per file</p>
+                    <input type="file" id="file-input" multiple
+                        accept=".txt,.json,.csv,.py,.js,.html,.css,.md,.xml,.yaml,.yml">
                 </div>
-                
+
                 <div id="file-list" class="file-list">
                     <!-- Files will be listed here -->
                 </div>
@@ -1168,14 +802,26 @@ Your final output after applying the two-pass "think again" process must always 
                 <label for="enable_api">Enable Anthropic API</label>
             </div>
 
-            <button id="add-problem" class="btn btn-full">Add Problem</button>
+            <button id="add-problem" class="btn btn-full">
+                <span>➕ Add Problem</span>
+            </button>
         </div>
 
         <div class="card">
             <h2>Problems List</h2>
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <span>Total Problems:</span>
+                    <span id="total-problems" class="stat-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>Files Attached:</span>
+                    <span id="total-files" class="stat-value">0</span>
+                </div>
+            </div>
             <div id="problems-container" class="problems-list">
                 <div class="empty-state">
-                    <i>📝</i>
+                    <div>📝</div>
                     <p>No problems added yet. Add your first problem above.</p>
                 </div>
             </div>
@@ -1188,14 +834,14 @@ Your final output after applying the two-pass "think again" process must always 
             </div>
             <div class="actions">
                 <button id="copy-json" class="btn btn-success">
-                    Copy JSON to Clipboard
+                    📋 Copy JSON to Clipboard
                 </button>
                 <button id="clear-all" class="btn btn-danger">
-                    Clear All Problems
+                    🗑️ Clear All Problems
                 </button>
                 <div class="tooltip">
                     <button id="download-json" class="btn">
-                        Download JSON File
+                        💾 Download JSON File
                     </button>
                     <span class="tooltiptext">Download as problems-metadata.json</span>
                 </div>
@@ -1219,6 +865,17 @@ Your final output after applying the two-pass "think again" process must always 
             const fileUploadArea = document.getElementById('file-upload-area');
             const fileInput = document.getElementById('file-input');
             const fileList = document.getElementById('file-list');
+            const nameSelect = document.getElementById('name');
+            const versionBadge = document.getElementById('version-badge');
+            const totalProblemsSpan = document.getElementById('total-problems');
+            const totalFilesSpan = document.getElementById('total-files');
+
+            // Update version badge when selection changes
+            nameSelect.addEventListener('change', function () {
+                const isV6 = this.value.includes('v6');
+                versionBadge.textContent = isV6 ? 'v6' : 'v7';
+                versionBadge.className = `version-badge ${isV6 ? 'v6' : 'v7'}`;
+            });
 
             // Event Listeners
             addProblemBtn.addEventListener('click', addProblemFromForm);
@@ -1228,20 +885,28 @@ Your final output after applying the two-pass "think again" process must always 
 
             // File upload handling
             fileUploadArea.addEventListener('click', () => fileInput.click());
-            fileUploadArea.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                fileUploadArea.style.borderColor = '#3498db';
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                fileUploadArea.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    fileUploadArea.classList.add('dragover');
+                });
             });
-            fileUploadArea.addEventListener('dragleave', () => {
-                fileUploadArea.style.borderColor = '#ddd';
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                fileUploadArea.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    fileUploadArea.classList.remove('dragover');
+                });
             });
+
             fileUploadArea.addEventListener('drop', (e) => {
                 e.preventDefault();
-                fileUploadArea.style.borderColor = '#ddd';
                 if (e.dataTransfer.files.length > 0) {
                     handleFiles(e.dataTransfer.files);
                 }
             });
+
             fileInput.addEventListener('change', (e) => {
                 if (e.target.files.length > 0) {
                     handleFiles(e.target.files);
@@ -1251,16 +916,16 @@ Your final output after applying the two-pass "think again" process must always 
             // Handle file uploads
             function handleFiles(files) {
                 Array.from(files).forEach(file => {
+                    // Check file size (10MB limit)
+                    if (file.size > 10 * 1024 * 1024) {
+                        alert(`File "${file.name}" is too large. Maximum size is 10MB.`);
+                        return;
+                    }
+
                     // Check if file is text-based
-                    const isTextFile = file.type.startsWith('text/') || 
-                                       file.name.endsWith('.txt') ||
-                                       file.name.endsWith('.json') ||
-                                       file.name.endsWith('.csv') ||
-                                       file.name.endsWith('.py') ||
-                                       file.name.endsWith('.js') ||
-                                       file.name.endsWith('.html') ||
-                                       file.name.endsWith('.css') ||
-                                       file.name.endsWith('.md');
+                    const textExtensions = ['.txt', '.json', '.csv', '.py', '.js', '.html', '.css', '.md', '.xml', '.yaml', '.yml'];
+                    const isTextFile = file.type.startsWith('text/') ||
+                        textExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
 
                     if (!isTextFile) {
                         alert(`File "${file.name}" is not a text file. Please upload only text-based files.`);
@@ -1268,13 +933,17 @@ Your final output after applying the two-pass "think again" process must always 
                     }
 
                     const reader = new FileReader();
-                    reader.onload = function(e) {
+                    reader.onload = function (e) {
                         currentFiles.push({
                             name: file.name,
                             size: file.size,
                             contents: e.target.result
                         });
                         updateFileList();
+                        updateStats();
+                    };
+                    reader.onerror = function () {
+                        alert(`Failed to read file "${file.name}". Please try again.`);
                     };
                     reader.readAsText(file);
                 });
@@ -1283,7 +952,7 @@ Your final output after applying the two-pass "think again" process must always 
             // Update file list UI
             function updateFileList() {
                 if (currentFiles.length === 0) {
-                    fileList.innerHTML = '<p style="color: #6c757d; text-align: center;">No files attached</p>';
+                    fileList.innerHTML = '<p style="color: #6c757d; text-align: center; padding: 20px;">No files attached</p>';
                     return;
                 }
 
@@ -1303,9 +972,10 @@ Your final output after applying the two-pass "think again" process must always 
             }
 
             // Remove a file
-            window.removeFile = function(index) {
+            window.removeFile = function (index) {
                 currentFiles.splice(index, 1);
                 updateFileList();
+                updateStats();
             };
 
             // Format file size
@@ -1317,14 +987,48 @@ Your final output after applying the two-pass "think again" process must always 
                 return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
             }
 
+            // Update statistics
+            function updateStats() {
+                totalProblemsSpan.textContent = problems.length;
+                const totalFiles = problems.reduce((sum, problem) => sum + (problem.files ? problem.files.length : 0), 0);
+                totalFilesSpan.textContent = totalFiles + currentFiles.length;
+            }
+
             // Add problem from form inputs
             function addProblemFromForm() {
                 const problemId = document.getElementById('problem_id').value.trim();
                 const conversationVersionId = document.getElementById('conversation_version_id').value.trim();
                 const domain = document.getElementById('domain').value.trim();
-                
-                if (!problemId || !conversationVersionId || !domain) {
-                    alert('Please fill in Problem ID, Conversation Version ID, and Domain');
+                const taskPrompt = document.getElementById('task_prompt').value.trim();
+                const solution = document.getElementById('solution').value.trim();
+
+                if (!problemId) {
+                    alert('Please enter a Problem ID');
+                    document.getElementById('problem_id').focus();
+                    return;
+                }
+
+                if (!conversationVersionId) {
+                    alert('Please enter a Conversation Version ID');
+                    document.getElementById('conversation_version_id').focus();
+                    return;
+                }
+
+                if (!domain) {
+                    alert('Please enter a Domain');
+                    document.getElementById('domain').focus();
+                    return;
+                }
+
+                if (!taskPrompt) {
+                    alert('Please enter a Task Prompt');
+                    document.getElementById('task_prompt').focus();
+                    return;
+                }
+
+                if (!solution) {
+                    alert('Please enter a Solution');
+                    document.getElementById('solution').focus();
                     return;
                 }
 
@@ -1350,12 +1054,12 @@ Your final output after applying the two-pass "think again" process must always 
                     required_tools: requiredTools,
                     scratchpad: document.getElementById('scratchpad').checked,
                     enable_anthropic_api: document.getElementById('enable_api').checked,
-                    task_prompt: document.getElementById('task_prompt').value,
-                    solution: document.getElementById('solution').value,
-                    batch: document.getElementById('batch').value,
+                    task_prompt: taskPrompt,
+                    solution: solution,
+                    batch: document.getElementById('batch').value.trim(),
                     difficulty: document.getElementById('difficulty').value,
                     task_type: "computation",
-                    description: document.getElementById('task_prompt').value.substring(0, 100) + (document.getElementById('task_prompt').value.length > 100 ? '...' : ''),
+                    description: taskPrompt.substring(0, 100) + (taskPrompt.length > 100 ? '...' : ''),
                     files: filesForProblem
                 };
 
@@ -1363,6 +1067,7 @@ Your final output after applying the two-pass "think again" process must always 
                 problemCounter++;
                 updateProblemsList();
                 updateJsonOutput();
+                updateStats();
 
                 // Reset form (except for image, startup_command, system_prompt, and difficulty which are likely to be the same)
                 document.getElementById('problem_id').value = '';
@@ -1371,10 +1076,13 @@ Your final output after applying the two-pass "think again" process must always 
                 document.getElementById('task_prompt').value = '';
                 document.getElementById('solution').value = '';
                 document.getElementById('batch').value = '';
-                
+
                 // Clear files for next problem
                 currentFiles = [];
                 updateFileList();
+
+                // Scroll to problems list
+                problemsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
 
             // Update the problems list UI
@@ -1382,7 +1090,7 @@ Your final output after applying the two-pass "think again" process must always 
                 if (problems.length === 0) {
                     problemsContainer.innerHTML = `
                         <div class="empty-state">
-                            <i>📝</i>
+                            <div>📝</div>
                             <p>No problems added yet. Add your first problem above.</p>
                         </div>
                     `;
@@ -1394,23 +1102,31 @@ Your final output after applying the two-pass "think again" process must always 
                 problems.forEach((problem, index) => {
                     const problemElement = document.createElement('div');
                     problemElement.className = 'problem-item';
-                    
+
                     const fileCount = problem.files ? problem.files.length : 0;
-                    const fileInfo = fileCount > 0 ? `<div><strong>Files:</strong> ${fileCount} attached</div>` : '';
-                    
+                    const fileInfo = fileCount > 0 ?
+                        `<div><strong>Files:</strong> ${fileCount} file${fileCount > 1 ? 's' : ''} attached</div>` :
+                        `<div><strong>Files:</strong> No files attached</div>`;
+
+                    const batchInfo = problem.batch ? `<div><strong>Batch:</strong> ${problem.batch}</div>` : '';
+
                     problemElement.innerHTML = `
                         <div class="problem-header">
-                            <div class="problem-title">Problem #${index + 1} (ID: ${problem.combined_id})</div>
+                            <div>
+                                <div class="problem-title">Problem #${index + 1}</div>
+                                <div class="problem-id">${problem.combined_id}</div>
+                            </div>
                             <div class="problem-actions">
                                 <button class="btn btn-danger" onclick="removeProblem(${index})">Remove</button>
                             </div>
                         </div>
                         <div class="problem-details">
                             <div><strong>Description:</strong> ${problem.description}</div>
-                            <div><strong>Difficulty:</strong> ${problem.difficulty}</div>
+                            <div><strong>Difficulty:</strong> <span style="text-transform: capitalize;">${problem.difficulty}</span></div>
                             <div><strong>Domain:</strong> ${problem.domain}</div>
                             <div><strong>Tools:</strong> ${problem.required_tools.join(', ')}</div>
-                            <div><strong>Conversation ID:</strong> ${problem.problem_id} (v${problem.conversation_version_id})</div>
+                            <div><strong>Conversation:</strong> ID: ${problem.problem_id}, Version: ${problem.conversation_version_id}</div>
+                            ${batchInfo}
                             ${fileInfo}
                         </div>
                     `;
@@ -1420,9 +1136,12 @@ Your final output after applying the two-pass "think again" process must always 
 
             // Remove a problem
             window.removeProblem = function (index) {
-                problems.splice(index, 1);
-                updateProblemsList();
-                updateJsonOutput();
+                if (confirm(`Are you sure you want to remove problem #${index + 1} (${problems[index].combined_id})?`)) {
+                    problems.splice(index, 1);
+                    updateProblemsList();
+                    updateJsonOutput();
+                    updateStats();
+                }
             };
 
             // Update the JSON output
@@ -1430,7 +1149,7 @@ Your final output after applying the two-pass "think again" process must always 
                 const problemSet = {
                     problem_set: {
                         owner: document.getElementById('owner').value,
-                        name: document.getElementById('name').value,
+                        name: nameSelect.value,
                         description: document.getElementById('description').value,
                         version: document.getElementById('version').value,
                         created_at: new Date().toISOString(),
@@ -1471,19 +1190,54 @@ Your final output after applying the two-pass "think again" process must always 
                 };
 
                 jsonOutput.textContent = JSON.stringify(problemSet, null, 2);
+
+                // Syntax highlighting for JSON
+                jsonOutput.innerHTML = syntaxHighlight(JSON.stringify(problemSet, null, 2));
             }
+
+            // Simple JSON syntax highlighting
+            function syntaxHighlight(json) {
+                json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+                    function (match) {
+                        let cls = 'number';
+                        if (/^"/.test(match)) {
+                            if (/:$/.test(match)) {
+                                cls = 'key';
+                            } else {
+                                cls = 'string';
+                            }
+                        } else if (/true|false/.test(match)) {
+                            cls = 'boolean';
+                        } else if (/null/.test(match)) {
+                            cls = 'null';
+                        }
+                        return '<span class="' + cls + '">' + match + '</span>';
+                    });
+            }
+
+            // Add CSS for syntax highlighting
+            const style = document.createElement('style');
+            style.textContent = `
+                .json-output .string { color: #7ec699; }
+                .json-output .number { color: #f08d49; }
+                .json-output .boolean { color: #ff8b8b; }
+                .json-output .null { color: #ff8b8b; }
+                .json-output .key { color: #cc99cd; }
+            `;
+            document.head.appendChild(style);
 
             // Copy JSON to clipboard
             function copyJsonToClipboard() {
                 const jsonText = jsonOutput.textContent;
                 navigator.clipboard.writeText(jsonText).then(() => {
                     // Show success feedback
-                    const originalText = copyJsonBtn.textContent;
-                    copyJsonBtn.textContent = 'Copied!';
-                    copyJsonBtn.style.background = '#2ecc71';
+                    const originalText = copyJsonBtn.innerHTML;
+                    copyJsonBtn.innerHTML = '✓ Copied!';
+                    copyJsonBtn.style.background = '#27ae60';
 
                     setTimeout(() => {
-                        copyJsonBtn.textContent = originalText;
+                        copyJsonBtn.innerHTML = originalText;
                         copyJsonBtn.style.background = '';
                     }, 2000);
                 }).catch(err => {
@@ -1494,35 +1248,69 @@ Your final output after applying the two-pass "think again" process must always 
 
             // Clear all problems
             function clearAllProblems() {
-                if (confirm('Are you sure you want to clear all problems?')) {
+                if (problems.length === 0) {
+                    alert('No problems to clear');
+                    return;
+                }
+
+                if (confirm(`Are you sure you want to clear all ${problems.length} problems? This action cannot be undone.`)) {
                     problems.length = 0;
                     updateProblemsList();
                     updateJsonOutput();
+                    updateStats();
+
+                    // Show confirmation message
+                    const originalText = clearAllBtn.innerHTML;
+                    clearAllBtn.innerHTML = '✓ Cleared!';
+                    clearAllBtn.style.background = '#27ae60';
+
+                    setTimeout(() => {
+                        clearAllBtn.innerHTML = originalText;
+                        clearAllBtn.style.background = '';
+                    }, 2000);
                 }
             }
 
             // Download JSON as file
             function downloadJsonFile() {
+                if (problems.length === 0) {
+                    alert('No problems to download. Please add some problems first.');
+                    return;
+                }
+
                 const jsonText = jsonOutput.textContent;
                 const blob = new Blob([jsonText], { type: 'application/json' });
                 const url = URL.createObjectURL(blob);
 
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = 'problems-metadata.json';
+
+                // Generate filename with timestamp
+                const timestamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+                const version = nameSelect.value.includes('v6') ? 'v6' : 'v7';
+                a.download = `problems-metadata-${version}-${timestamp}.json`;
+
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
+
+                // Show confirmation message
+                const originalText = downloadJsonBtn.innerHTML;
+                downloadJsonBtn.innerHTML = '✓ Downloaded!';
+                downloadJsonBtn.style.background = '#27ae60';
+
+                setTimeout(() => {
+                    downloadJsonBtn.innerHTML = originalText;
+                    downloadJsonBtn.style.background = '';
+                }, 2000);
             }
 
             // Initialize JSON output
             updateJsonOutput();
+            updateStats();
         });
     </script>
 </body>
+
 </html>
-
-
-
-
